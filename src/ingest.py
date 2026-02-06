@@ -36,7 +36,6 @@ def ingest():
         persist_directory=settings.chroma_dir,
         collection_name=settings.collection_name
     )
-    vectordb.persist()
 
     print("Ingestion complete")
     print(f"Files loaded: {len(docs)}")

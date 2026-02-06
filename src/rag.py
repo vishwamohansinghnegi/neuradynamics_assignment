@@ -14,10 +14,6 @@ from langchain_core.output_parsers import StrOutputParser
 from src.config import settings
 from src.prompts import BASELINE_PROMPT, IMPROVED_PROMPT
 
-
-# ----------------------------
-# Load once (fast + standard)
-# ----------------------------
 load_dotenv()
 
 embeddings = HuggingFaceEmbeddings(model_name=settings.embedding_model)
@@ -36,10 +32,6 @@ llm = ChatGoogleGenerativeAI(model=settings.chat_model, temperature=0)
 
 parser = StrOutputParser()
 
-
-# ----------------------------
-# Small helpers (simple + reusable)
-# ----------------------------
 def rerank(question: str, docs: List[Document]) -> List[Document]:
     if not docs:
         return []
@@ -59,9 +51,6 @@ def build_context(docs: List[Document]) -> str:
     return "\n\n---\n\n".join(parts)
 
 
-# ----------------------------
-# Main public function
-# ----------------------------
 def answer(query: str, prompt_version: str = "improved") -> Tuple[str, List[Dict]]:
     # 1) Retrieve
     docs = retriever.invoke(query)
