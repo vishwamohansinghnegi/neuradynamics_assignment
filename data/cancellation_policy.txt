@@ -1,0 +1,6 @@
+# Cancellation Policy
+
+- Orders can be cancelled **within 12 hours** of placing the order.
+- Once an order has been **shipped**, it **cannot be cancelled**.
+- If a cancellation is approved, the refund will be processed to the **original payment method**.
+- Cancellation requests must be submitted through customer support.

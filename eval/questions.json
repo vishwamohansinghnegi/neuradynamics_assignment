@@ -1,0 +1,30 @@
+[
+  {
+    "question": "What is the refund window?",
+    "expected": "Refund allowed within 7 days of delivery."
+  },
+  {
+    "question": "Can I cancel my order after it has shipped?",
+    "expected": "No, cancellation not allowed after shipping."
+  },
+  {
+    "question": "Do you ship internationally?",
+    "expected": "Unanswerable (documents say India only but do not mention international explicitly beyond that)."
+  },
+  {
+    "question": "Is express delivery available?",
+    "expected": "Unanswerable."
+  },
+  {
+    "question": "How long does standard delivery take?",
+    "expected": "5–10 business days after dispatch."
+  },
+  {
+    "question": "Are shipping charges refundable?",
+    "expected": "No, shipping charges are non-refundable."
+  },
+  {
+    "question": "Do you support PayPal payments?",
+    "expected": "Unanswerable."
+  }
+]

@@ -1,0 +1,10 @@
+dotenv
+tiktoken
+typing
+langchain
+langchain-community
+langchain-text-splitters
+langchain-google-genai
+sentence-transformers
+langchain-chroma 
+langchain-huggingface
