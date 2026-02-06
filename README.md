@@ -1,46 +1,43 @@
-```
-# Policy RAG Assistant (Prompt Engineering + RAG Mini Project)
+## Policy RAG Assistant
 
-This project is a small Retrieval-Augmented Generation (RAG) system that answers questions using company policy documents (Refund, Cancellation, Shipping, Payment).  
-It retrieves relevant chunks from the documents and generates an answer grounded in that retrieved context.
+### (Prompt Engineering + RAG Mini Project)
 
-Note: No policy documents were provided in the assignment, so I created a small set of realistic mock policy files in the `data/` folder to demonstrate the complete workflow.
+This project is a compact **Retrieval-Augmented Generation (RAG)** system designed to answer questions using company policy documents (Refund, Cancellation, Shipping, Payment). It retrieves relevant segments from the documentation and generates answers strictly grounded in the retrieved context.
 
----
-
-## What this project does
-
-- Loads policy documents from `data/` (`.md` / `.txt`)
-- Splits documents into chunks (with overlap)
-- Stores chunk embeddings in ChromaDB
-- Retrieves top relevant chunks for a user question
-- Uses a MiniLM cross-encoder reranker to improve retrieval quality
-- Uses Gemini to generate answers using only the retrieved context
-- Refuses when the documents do not contain the answer
-- Runs through a simple CLI (no UI)
+> **Note:** As no policy documents were provided, a set of realistic mock policy files has been included in the `data/` folder to demonstrate the full workflow.
 
 ---
 
-## Tech Stack
+### ## What this project does
 
-- LLM: Gemini (`langchain-google-genai`)
-- Embeddings: MiniLM (`sentence-transformers/all-MiniLM-L6-v2`)
-- Vector DB: ChromaDB
-- Reranking: CrossEncoder (`cross-encoder/ms-marco-MiniLM-L-6-v2`)
-- Framework: LangChain
+* **Data Loading:** Ingests policy documents from `data/` (`.md` / `.txt`).
+* **Vector Storage:** Splits documents into overlapping chunks and stores embeddings in **ChromaDB**.
+* **Advanced Retrieval:** Employs a **MiniLM cross-encoder reranker** to prioritize the most relevant chunks.
+* **Grounded Generation:** Uses **Gemini** to generate answers using *only* the provided context.
+* **Hallucination Guardrails:** Explicitly refuses to answer if the documents do not contain the necessary information.
+* **Interface:** Operates via a streamlined Command Line Interface (CLI).
 
 ---
 
-## Project Structure
+### ## Tech Stack
 
-```
+* **LLM:** Gemini (`langchain-google-genai`)
+* **Embeddings:** MiniLM (`sentence-transformers/all-MiniLM-L6-v2`)
+* **Vector DB:** ChromaDB
+* **Reranking:** CrossEncoder (`cross-encoder/ms-marco-MiniLM-L-6-v2`)
+* **Framework:** LangChain
 
+---
+
+### ## Project Structure
+
+```text
 NeuraDynamics_assignment/
 │
-├── data/                 # policy documents
-├── chroma_db/            # generated after ingestion
-├── eval/                 # evaluation set + script
-├── src/                  # main code
+├── data/                 # Policy documents
+├── chroma_db/            # Generated after ingestion
+├── eval/                 # Evaluation set + script
+├── src/                  # Main source code
 │   ├── config.py
 │   ├── ingest.py
 │   ├── prompts.py
@@ -50,171 +47,81 @@ NeuraDynamics_assignment/
 ├── requirements.txt
 └── README.md
 
-````
+```
 
 ---
 
-## Setup
+### ## Setup & Installation
 
-### 1) Create and activate environment
+#### 1. Create and activate environment
 
 ```bash
 python -m venv myenv
-````
-
-Windows:
-
-```powershell
+# Windows:
 myenv\Scripts\activate
-```
-
-Mac/Linux:
-
-```bash
+# Mac/Linux:
 source myenv/bin/activate
+
 ```
 
----
-
-### 2) Install requirements
+#### 2. Install requirements
 
 ```bash
 pip install -r requirements.txt
+
 ```
 
----
-
-### 3) Add Gemini API key
+#### 3. Configuration
 
 Create a `.env` file in the project root:
 
 ```env
 GOOGLE_API_KEY=your_api_key_here
+
 ```
 
 ---
 
-## Run
+### ## Usage
 
-### Step 1: Ingest documents into ChromaDB
+**Step 1: Ingest documents** Process the raw text into the vector database:
 
 ```bash
 python -m src.ingest
+
 ```
 
-This creates the vector database in `chroma_db/`.
-
----
-
-### Step 2: Start the CLI assistant
+**Step 2: Start the Assistant** Launch the CLI to ask questions:
 
 ```bash
 python app.py
-```
-
-Example questions:
-
-* What is the refund window?
-* Can I cancel after shipping?
-* How long does delivery take?
-* Is COD available?
-* Do you support PayPal? (should refuse)
-
----
-
-## How it works (simple)
-
-1. Policy documents are loaded from `data/`
-2. Text is chunked into smaller overlapping pieces
-3. Chunks are embedded using MiniLM and stored in ChromaDB
-4. When a question is asked:
-
-   * Top-k chunks are retrieved using semantic search
-   * Retrieved chunks are reranked using a cross-encoder
-   * The final context is passed to Gemini
-5. Gemini answers using a strict prompt to avoid hallucination
-
----
-
-## Chunking Strategy
-
-Configured in `src/config.py`
-
-* Chunk size: 800
-* Overlap: 150
-
-Reason: policy documents contain short clauses. Smaller chunks improve retrieval accuracy, and overlap prevents missing important boundary sentences.
-
----
-
-## Prompts Used
-
-Stored in `src/prompts.py`
-
-### Prompt v1 (Baseline)
-
-* Basic “answer from context”
-* Weak refusal handling
-
-### Prompt v2 (Improved)
-
-* Strict grounding rules (answer only from retrieved context)
-* Explicit refusal when missing
-* Structured output with citations
-
----
-
-## Evaluation
-
-Evaluation questions are in:
 
 ```
-eval/questions.json
-```
 
-Run evaluation:
+**Example Queries:**
 
-```bash
-python eval/run_eval.py
-```
-
-The evaluation set includes:
-
-* Answerable questions
-* Partially answerable questions
-* Unanswerable questions (to test hallucination avoidance)
+* "What is the refund window?"
+* "Can I cancel after shipping?"
+* "Do you support PayPal?" *(System should refuse if not in docs)*
 
 ---
 
-## Key Trade-offs
+### ## Key Features & Logic
 
-* Kept the system small and readable (focus is retrieval + prompting).
-* Added reranking for better relevance, but it increases runtime slightly.
-* Used manual evaluation for transparency instead of automated scoring.
-
----
-
-## Improvements with more time
-
-* Add a query router:
-
-  * normal greetings/general questions → normal assistant response
-  * policy questions → strict RAG mode
-* Add similarity thresholding to reduce irrelevant retrieval
-* Add structured JSON output validation
-* Add basic tracing/logging for retrieval and reranking scores
+* **Chunking Strategy:** Configured with a size of **800** and an overlap of **150**. This ensures that short policy clauses are captured entirely without losing context at the boundaries.
+* **Dual-Stage Retrieval:** Semantic search identifies candidates; the Cross-Encoder ensures the LLM only sees the most statistically relevant information.
+* **Prompt Engineering:** The system uses "Prompt v2," which includes strict grounding rules and structured output requirements to ensure safety and reliability.
 
 ---
 
-## What I’m most proud of
+### ## Evaluation & Future Improvements
 
-The improved prompt and grounding approach, which prevents hallucinations and forces safe refusals when the documents do not contain the answer.
+The system is tested against `eval/questions.json`, covering answerable, partially answerable, and unanswerable cases.
+
+**Future Roadmap:**
+
+* **Query Routing:** Distinguish between "Hello" and "What is the shipping policy?" to handle general chat naturally.
+* **Similarity Thresholds:** Automatically reject low-confidence retrievals before they reach the LLM.
+* **Tracing:** Implement logging for reranking scores to audit retrieval quality.
 
 ---
-
-## One thing I’d improve next
-
-A small query router so that normal messages like “Hi” are handled naturally, while policy questions remain strictly grounded in the documents.
-
-```
-```
